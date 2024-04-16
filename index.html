@@ -10,11 +10,16 @@ parser.onValue = ({ value }) => { console.log(value) };
 
 const response = await fetch('./data.jsonl')
 const reader = response.body.getReader();
-const { value, done } = await reader.read();
+  
+  let done, value;
+  while (!done) {
+    ({ value, done } = await reader.read());
+    try {
+	 parser.write(new TextDecoder('utf8').decode(value))
+	 } catch (err) {
+	 console.error(err)
+	 alert(err)
+	}
+  }
 
-if (done) {
-  console.log("The stream was already closed!");
-} else {
-  parser.write(new TextDecoder('utf8').decode(value))
-}
 </script>
