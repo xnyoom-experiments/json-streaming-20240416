@@ -5,17 +5,20 @@
 <script type="module">
 import { JSONParser } from 'https://cdn.jsdelivr.net/npm/@streamparser/json@0.0.20/+esm'
 
-const parser = new JSONParser();
-parser.onValue = ({ value }) => { console.log(value) };
-
-const response = await fetch('./data.jsonl')
+  const jsonparser = new JSONParser();
+  jsonparser.onValue = ({ value, key, parent, stack, partial }) => {
+     console.log(`Value parsed`, value);
+ 
+  };
+  
+const response = await fetch('./small-file.json')
 const reader = response.body.getReader();
   
   let done, value;
   while (!done) {
     ({ value, done } = await reader.read());
     try {
-	 parser.write(new TextDecoder('utf8').decode(value))
+	 jsonparser.write(new TextDecoder('utf8').decode(value))
 	 } catch (err) {
 	 console.error(err)
 	 alert(err)
