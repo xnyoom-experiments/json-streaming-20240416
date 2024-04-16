@@ -4,25 +4,27 @@
 Check the console
 
 <script type="module">
-  import { JSONParser } from 'https://cdn.jsdelivr.net/npm/@streamparser/json@0.0.20/+esm';
+/* eslint-env browser */
 
-  const parser = new JSONParser({ stringBufferSize: undefined, paths: ['$.*'] })
-  parser.onValue = ({ value, key, parent, stack }) => {
-    console.log('Parsed object', key, value)
-  }
+import { JSONParser } from 'https://cdn.jsdelivr.net/npm/@streamparser/json@0.0.20/+esm'
 
-  const response = await fetch('/large-file.json')
-  const reader = response.body.getReader()
-  
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-	
-	try {
-        parser.write(value)
-	} catch (err) {
-		console.error(err)
-		alert(err)
-	}
+const parser = new JSONParser({ stringBufferSize: undefined, paths: ['$.*'] })
+parser.onValue = ({ value, key, parent, stack }) => {
+  console.log('Parsed object', key, value)
+}
+
+const response = await fetch('/large-file.json')
+const reader = response.body.getReader()
+
+while (true) {
+  const { done, value } = await reader.read()
+  if (done) break
+
+  try {
+    parser.write(value)
+  } catch (err) {
+    console.error(err)
+    alert(err)
   }
+}
 </script>
