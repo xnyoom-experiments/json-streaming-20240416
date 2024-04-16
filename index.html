@@ -1,0 +1,20 @@
+<!-- https://github.com/json-iterator/test-data/blob/master/large-file.json -->
+<!-- https://stackoverflow.com/a/62123585 -->
+<!-- https://www.npmjs.com/package/@streamparser/json -->
+
+<script type="module">
+import { JSONParser } from 'https://cdn.jsdelivr.net/npm/@streamparser/json@0.0.20/+esm'
+
+const parser = new JSONParser();
+parser.onValue = ({ value }) => { console.log(value) };
+
+const response = await fetch('./data.jsonl')
+const reader = response.body.getReader();
+const { value, done } = await reader.read();
+
+if (done) {
+  console.log("The stream was already closed!");
+} else {
+  parser.write(new TextDecoder('utf8').decode(value))
+}
+</script>
