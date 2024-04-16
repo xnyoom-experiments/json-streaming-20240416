@@ -1,0 +1,25 @@
+<!-- https://github.com/json-iterator/test-data/blob/master/large-file.json -->
+<!-- https://stackoverflow.com/a/62123585 -->
+<!-- https://www.npmjs.com/package/@streamparser/json -->
+
+<script type="module">
+  import { JSONParser } from 'https://cdn.jsdelivr.net/npm/@streamparser/json@0.0.20/+esm';
+  import {ZstdInit} from 'https://cdn.jsdelivr.net/npm/@oneidentity/zstd-js@1.0.3/wasm/decompress/+esm';
+
+  const {ZstdSimple, ZstdStream} = await ZstdInit()
+
+  console.log(ZstdSimple, ZstdStream)
+  
+  const parser = new JSONParser({ stringBufferSize: undefined, paths: ['$.*'] });
+  parser.onValue = ({ value, key, parent, stack }) => {
+    console.log('Parsed object', key, value)
+  };
+
+  const response = await fetch('/large-file.json');
+  const reader = response.body.getReader();
+  while(true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    //parser.write(value);
+  }
+</script>
