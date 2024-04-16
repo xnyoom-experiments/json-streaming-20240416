@@ -3,26 +3,18 @@
 <!-- https://www.npmjs.com/package/@streamparser/json -->
 
 <script type="module">
-import { JSONParser } from 'https://cdn.jsdelivr.net/npm/@streamparser/json@0.0.20/+esm'
+  import { JSONParser } from 'https://cdn.jsdelivr.net/npm/@streamparser/json@0.0.20/+esm';
 
-  const jsonparser = new JSONParser();
-  jsonparser.onValue = ({ value, key, parent, stack, partial }) => {
-     console.log(`Value parsed`, value);
- 
+  const parser = new JSONParser({ stringBufferSize: undefined, paths: ['$.*'] });
+  parser.onValue = ({ value, key, parent, stack }) => {
+    console.log('Parsed object', key, value)
   };
-  
-const response = await fetch('./small-file.json')
-const reader = response.body.getReader();
-  
-  let done, value;
-  while (!done) {
-    ({ value, done } = await reader.read());
-    try {
-	 jsonparser.write(new TextDecoder('utf8').decode(value))
-	 } catch (err) {
-	 console.error(err)
-	 alert(err)
-	}
-  }
 
+  const response = await fetch('/large-file.json');
+  const reader = response.body.getReader();
+  while(true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    parser.write(value);
+  }
 </script>
